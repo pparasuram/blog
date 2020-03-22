@@ -25,7 +25,7 @@ public class BlogPostControllerTests {
     private static final String RESOURCE_URI = "/api/articles";
     private final ObjectMapper mapper = new ObjectMapper();
     private static final BlogPost testPosting =
-            new BlogPost(1L, "category", null, "title", "content");
+            new BlogPost(0L, "category", null, "title", "content");
     @Test
     @DisplayName("T01 - POST accepts and returns blog post representation")
     public void postCreatesNewBlogEntry_Test(@Autowired MockMvc mockMvc)
@@ -42,5 +42,31 @@ public class BlogPostControllerTests {
         MockHttpServletResponse mockResponse = result.getResponse();
         assertEquals("http://localhost/api/articles/1",
                 mockResponse.getHeader("Location"));
+
+        // Send the second instance:
+        result = mockMvc.perform(MockMvcRequestBuilders.post(RESOURCE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(testPosting)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(
+                        jsonPath("$.title").value(testPosting.getTitle()))
+                .andExpect(
+                        jsonPath("$.category").value(testPosting.getCategory()))
+                .andExpect(
+                        jsonPath("$.content").value(testPosting.getContent()))
+                .andReturn();
+        mockResponse = result.getResponse();
+        assertEquals("http://localhost/api/articles/2",
+                mockResponse.getHeader("Location"));
+    }
+    @Test
+    @DisplayName("T02 - POST automatically adds the datePosted")
+    public void test02(@Autowired MockMvc mockMvc) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(RESOURCE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(testPosting)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.datePosted").isNotEmpty());
     }
 }

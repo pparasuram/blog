@@ -1,10 +1,14 @@
 package com.spankinfresh.blog.domain;
 
+import javax.persistence.*;
 import java.util.Date;
-
+@Entity
 public class BlogPost {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String category;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date datePosted;
     private String title;
     private String content;
