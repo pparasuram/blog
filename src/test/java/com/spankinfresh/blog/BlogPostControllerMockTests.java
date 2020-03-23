@@ -15,11 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 // import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 @SpringBootTest
@@ -31,7 +33,14 @@ public class BlogPostControllerMockTests {
     private final ObjectMapper mapper = new ObjectMapper();
     private static final BlogPost testPosting =
             new BlogPost(0L, "category", null, "title", "content");
-
+    private Collection<BlogPost>
+    createMockBlogEntryList(BlogPost... itemArgs) {
+        HashMap<Long, BlogPost> blogEntries = new HashMap<>();
+        for (BlogPost blogPost : itemArgs) {
+            blogEntries.put(blogPost.getId(), blogPost);
+        }
+        return blogEntries.values();
+    }
     /*
         @Test
         @DisplayName("T01 - POST accepts and returns blog post representation")
@@ -129,5 +138,16 @@ public class BlogPostControllerMockTests {
                         jsonPath("$.fieldErrors.content")
                                 .value("Content is required"));
         verify(mockRepository, never()).save(any(BlogPost.class));
+    }
+    @Test
+    @DisplayName("T05 - GET All works for empty list")
+    public void test05(@Autowired MockMvc mockMvc) throws Exception {
+        when(mockRepository.findAll()).
+                thenReturn(createMockBlogEntryList());
+        mockMvc.perform(MockMvcRequestBuilders.get(RESOURCE_URI))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(0));
+        verify(mockRepository, times(1)).findAll();
     }
 }

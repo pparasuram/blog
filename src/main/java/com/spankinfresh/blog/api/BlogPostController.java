@@ -1,4 +1,4 @@
-package com.spankinfresh.blog;
+package com.spankinfresh.blog.api;
 
 import com.spankinfresh.blog.data.BlogPostRepository;
 import com.spankinfresh.blog.domain.BlogPost;
