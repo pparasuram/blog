@@ -1,16 +1,26 @@
 package com.spankinfresh.blog.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 @Entity
 public class BlogPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @NotNull
+    @Size(min = 1, max = 200,
+            message = "Please enter a category name of up to 200 characters")
     private String category;
     @Temporal(TemporalType.TIMESTAMP)
     private Date datePosted;
+    @NotNull
+    @Size(min = 1, max = 200,
+            message = "Please enter a title up to 200 characters in length")
     private String title;
+    @NotNull
+    @Size(min = 1, max = 500000, message = "Content is required")
     private String content;
     public BlogPost() { }
     public BlogPost(long id, String category, Date datePosted,

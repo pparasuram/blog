@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 @RestController
@@ -32,7 +33,7 @@ public class BlogPostController {
     }
     @PostMapping
     public ResponseEntity<BlogPost> createBlogEntry(
-            @RequestBody BlogPost blogPost,
+            @Valid @RequestBody BlogPost blogPost,
             UriComponentsBuilder uriComponentsBuilder) {
         blogPost.setDatePosted(new Date());
         BlogPost savedItem = blogPostRepository.save(blogPost);
